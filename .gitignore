@@ -1,0 +1,24 @@
+# Fichiers sensibles
+.env
+.env.local
+.env.production
+
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+erreur_log.txt
+
+# Editeurs et systeme
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,235 @@
+{
+  "covid19": {
+    "indicateur_principal": "taux_incidence",
+    "unite": "pour 100 000 habitants / semaine",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 0.35,
+        "couleur": "#10b981",
+        "signification": "Circulation virale faible"
+      },
+      "Jaune": {
+        "min": 0.35, "max": 0.65,
+        "couleur": "#f59e0b",
+        "signification": "Circulation modérée"
+      },
+      "Orange": {
+        "min": 0.65, "max": 1.5,
+        "couleur": "#f97316",
+        "signification": "Circulation active"
+      },
+      "Rouge": {
+        "min": 1.5, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Épidémie active - Urgence"
+      }
+    },
+    "regles_speciales": {
+      "letalite": {
+        "condition": "taux_letalite > 3.0",
+        "action": "Escalade d'un niveau",
+        "description": "Létalité anormalement élevée"
+      }
+    }
+  },
+
+  "paludisme": {
+    "indicateur_principal": "taux_incidence",
+    "unite": "pour 1 000 habitants / semaine",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 10,
+        "couleur": "#10b981",
+        "signification": "Endémie stable"
+      },
+      "Jaune": {
+        "min": 10, "max": 30,
+        "couleur": "#f59e0b",
+        "signification": "Augmentation saisonnière"
+      },
+      "Orange": {
+        "min": 30, "max": 60,
+        "couleur": "#f97316",
+        "signification": "Épidémie localisée"
+      },
+      "Rouge": {
+        "min": 60, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Épidémie majeure"
+      }
+    },
+    "regles_speciales": {
+      "alerte_enfants": {
+        "condition": "incidence_enfants_5_ans > 50",
+        "action": "Alerte Orange minimum",
+        "description": "Protection renforcée des enfants < 5 ans"
+      },
+      "saisonnalite": {
+        "periode_risque": "Novembre à Avril",
+        "facteur_multiplicateur": 1.5,
+        "description": "Seuils plus stricts en saison des pluies"
+      }
+    }
+  },
+
+  "peste": {
+    "indicateur_principal": "taux_incidence",
+    "unite": "pour 100 000 habitants / semaine",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 0,
+        "couleur": "#10b981",
+        "signification": "Aucun cas détecté"
+      },
+      "Jaune": {
+        "min": 0.1, "max": 0.5,
+        "couleur": "#f59e0b",
+        "signification": "Cas sporadiques"
+      },
+      "Orange": {
+        "min": 0.5, "max": 2.0,
+        "couleur": "#f97316",
+        "signification": "Début d'épidémie"
+      },
+      "Rouge": {
+        "min": 2.0, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Épidémie active"
+      }
+    },
+    "regles_speciales": {
+      "forme_pulmonaire": {
+        "condition": "cas_pulmonaires > 0",
+        "action": "Alerte Orange immédiate",
+        "description": "La forme pulmonaire est très contagieuse et mortelle"
+      },
+      "zone_endemique": {
+        "condition": "region IN ['Itasy', 'Analamanga', 'Vakinankaratra']",
+        "action": "Surveillance renforcée Sept-Avr",
+        "description": "Hautes Terres centrales"
+      }
+    }
+  },
+
+  "rougeole": {
+    "indicateur_principal": "taux_incidence",
+    "unite": "pour 100 000 habitants / semaine",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 1,
+        "couleur": "#10b981",
+        "signification": "Elimination maintenue"
+      },
+      "Jaune": {
+        "min": 1, "max": 5,
+        "couleur": "#f59e0b",
+        "signification": "Cas importés ou sporadiques"
+      },
+      "Orange": {
+        "min": 5, "max": 20,
+        "couleur": "#f97316",
+        "signification": "Flambée épidémique"
+      },
+      "Rouge": {
+        "min": 20, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Épidémie majeure"
+      }
+    },
+    "regles_speciales": {
+      "couverture_vaccinale": {
+        "condition": "couverture_vaccinale_pct < 80",
+        "action": "Alerte Jaune structurelle",
+        "description": "Risque élevé de flambée (Seuil OMS: 95%)"
+      },
+      "cible_enfants": {
+        "condition": "cas_0_4_ans > (cas_signalés * 0.60)",
+        "action": "Alerte Orange",
+        "description": "Impact disproportionné sur les jeunes enfants"
+      }
+    }
+  },
+
+  "hepatite": {
+    "indicateur_principal": "taux_incidence",
+    "unite": "pour 100 000 habitants / semaine (cas aigus)",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 0.05,
+        "couleur": "#10b981",
+        "signification": "Incidence aiguë stable"
+      },
+      "Jaune": {
+        "min": 0.05, "max": 0.08,
+        "couleur": "#f59e0b",
+        "signification": "Augmentation des cas aigus"
+      },
+      "Orange": {
+        "min": 0.08, "max": 0.12,
+        "couleur": "#f97316",
+        "signification": "Flambée de cas aigus"
+      },
+      "Rouge": {
+        "min": 0.12, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Épidémie aiguë (ex: Hépatite E)"
+      }
+    },
+    "regles_speciales": {
+      "prevalence_chronique": {
+        "condition": "prevalence_aghbs_region > 0.10",
+        "action": "Alerte structurelle Orange",
+        "description": "Région hyper-endémique (ex: Mahajanga)"
+      },
+      "transmission_mere_enfant": {
+        "condition": "taux_transmission_mere_enfant > 20",
+        "action": "Alerte Jaune",
+        "description": "Échec de la prévention verticale"
+      }
+    }
+  },
+
+  "tuberculose": {
+    "indicateur_principal": "taux_incidence_annuel",
+    "unite": "pour 100 000 habitants / an",
+    "niveaux": {
+      "Vert": {
+        "min": 0, "max": 150,
+        "couleur": "#10b981",
+        "signification": "Incidence maîtrisée"
+      },
+      "Jaune": {
+        "min": 150, "max": 200,
+        "couleur": "#f59e0b",
+        "signification": "Incidence modérée"
+      },
+      "Orange": {
+        "min": 200, "max": 250,
+        "couleur": "#f97316",
+        "signification": "Incidence élevée"
+      },
+      "Rouge": {
+        "min": 250, "max": null,
+        "couleur": "#ef4444",
+        "signification": "Hyper-endémie"
+      }
+    },
+    "regles_speciales": {
+      "tb_multiresistante": {
+        "condition": "cas_tb_multiresistante > 2",
+        "action": "Alerte Rouge immédiate",
+        "description": "Détection de TB-MR (Urgence sanitaire)"
+      },
+      "coinfection_vih": {
+        "condition": "cas_coinfection_vih > (nouveaux_cas * 0.30)",
+        "action": "Alerte Orange",
+        "description": "Forte prévalence VIH chez les patients TB"
+      },
+      "succes_therapeutique": {
+        "condition": "taux_succes_therapeutique < 75",
+        "action": "Alerte Jaune",
+        "description": "Performance du programme de traitement insuffisante"
+      }
+    }
+  }
+}

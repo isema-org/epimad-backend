@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "pays": "Madagascar",
+    "code_iso": "MDG",
+    "population_nationale": 30437261,
+    "nombre_regions": 24,
+    "source": "Institut National de la Statistique (INSTAT) Madagascar + Ajustement OMS",
+    "derniere_mise_a_jour": "2024"
+  },
+
+  "regions": {
+    "Analamanga":          {"population": 4290727, "latitude": -18.9,  "longitude": 47.5,  "acces_soins": 85, "type": "urbain"},
+    "Vakinankaratra":      {"population": 2462316, "latitude": -19.8,  "longitude": 47.0,  "acces_soins": 65, "type": "plateau"},
+    "Itasy":               {"population": 1063882, "latitude": -19.0,  "longitude": 46.5,  "acces_soins": 55, "type": "plateau"},
+    "Bongolava":           {"population":  794456, "latitude": -18.5,  "longitude": 46.0,  "acces_soins": 40, "type": "rural"},
+
+    "Haute Matsiatra":     {"population": 1710391, "latitude": -21.5,  "longitude": 47.0,  "acces_soins": 50, "type": "plateau"},
+    "Fitovinany":          {"population": 1011279, "latitude": -22.0,  "longitude": 48.2,  "acces_soins": 35, "type": "cotier"},
+    "Amoron'i Mania":      {"population":  991145, "latitude": -20.5,  "longitude": 47.5,  "acces_soins": 45, "type": "plateau"},
+    "Vatovavy":            {"population":  576905, "latitude": -21.0,  "longitude": 48.5,  "acces_soins": 35, "type": "cotier"},
+    "Atsimo-Atsinanana":   {"population": 1220000, "latitude": -23.0,  "longitude": 47.5,  "acces_soins": 40, "type": "cotier"},
+    "Ihorombe":            {"population":  494097, "latitude": -22.5,  "longitude": 46.5,  "acces_soins": 40, "type": "rural"},
+    
+    "Atsinanana":          {"population": 1750511, "latitude": -19.0,  "longitude": 48.8,  "acces_soins": 55, "type": "cotier"},
+    "Ambatosoa":           {"population":  652462, "latitude": -17.8,  "longitude": 48.8,  "acces_soins": 40, "type": "rural"},
+    "Alaotra-Mangoro":     {"population": 1479918, "latitude": -18.0,  "longitude": 48.5,  "acces_soins": 50, "type": "rural"},
+    "Analanjirofo":        {"population":  864183, "latitude": -17.0,  "longitude": 49.5,  "acces_soins": 45, "type": "cotier"},
+
+    "Sofia":               {"population": 1784988, "latitude": -14.5,  "longitude": 47.8,  "acces_soins": 40, "type": "rural"},
+    "Boeny":               {"population": 1100305, "latitude": -15.8,  "longitude": 46.3,  "acces_soins": 60, "type": "cotier"},
+    "Betsiboka":           {"population":  465641, "latitude": -17.0,  "longitude": 46.0,  "acces_soins": 35, "type": "rural"},
+    "Melaky":              {"population":  365790, "latitude": -17.5,  "longitude": 45.0,  "acces_soins": 30, "type": "rural"},
+    
+    "SAVA":                {"population": 1330546, "latitude": -14.3,  "longitude": 49.8,  "acces_soins": 45, "type": "cotier"},
+    "Diana":               {"population": 1053715, "latitude": -13.0,  "longitude": 49.5,  "acces_soins": 50, "type": "cotier"},
+    "Atsimo-Andrefana":    {"population": 2128706, "latitude": -23.5,  "longitude": 44.5,  "acces_soins": 40, "type": "cotier"},
+    "Androy":              {"population": 1065878, "latitude": -24.8,  "longitude": 45.5,  "acces_soins": 30, "type": "rural"},
+    "Anosy":               {"population":  957916, "latitude": -25.0,  "longitude": 47.0,  "acces_soins": 35, "type": "cotier"},
+    "Menabe":              {"population":  819876, "latitude": -20.0,  "longitude": 44.5,  "acces_soins": 35, "type": "cotier"}
+    
+  },
+
+  "verification": {
+    "somme_totale": 30437261,
+    "ecart_tolerance": 0.01,
+    "methode_ajustement": "proportionnel_facteur_1.184"
+  }
+}

@@ -1,0 +1,760 @@
+{
+  "covid19": {
+    "metadata": {
+      "maladie_id": "covid19",
+      "nom": "COVID-19",
+      "agent_pathogene": "SARS-CoV-2",
+      "type": "Pandémique",
+      "frequence_donnees": "quotidien",
+      "unite_temporelle": "jour",
+      "date_premier_cas_madagascar": "2020-03-20",
+      "description": "Maladie respiratoire aiguë causée par le coronavirus SARS-CoV-2"
+    },
+    "source": {
+      "nom": "Our World in Data / OMS",
+      "fichier_brut": "ETL/covid19/data/raw/covid_24_regions_structured.csv",
+      "format": "CSV",
+      "encodage": "utf-8",
+      "separateur": ",",
+      "niveau_initial": "national + régional mélangé",
+      "besoin_desagregation": true
+    },
+    "colonnes_source": {
+      "colonnes_utiles": {
+
+        "temporelles": ["date"],
+        "geographiques": ["country", "region"],
+        "cas": ["new_cases", "total_cases", "new_cases_smoothed", "new_cases_per_million"],
+        "gueris": ["new_recoveries", "total_recoveries"],
+        "deces": ["new_deaths", "total_deaths", "new_deaths_smoothed", "new_deaths_per_million"],
+        "hospitalisations": ["hosp_patients", "hosp_patients_per_million", "weekly_hosp_admissions"],
+        "soins_intensifs": ["icu_patients", "icu_patients_per_million", "weekly_icu_admissions"],
+        "tests": ["total_tests", "new_tests", "positive_rate", "tests_per_case"],
+        "vaccination": ["people_vaccinated", "people_fully_vaccinated", "total_vaccinations"],
+        "contexte": ["population", "stringency_index", "reproduction_rate"]
+      },
+      "colonnes_ignorees": [
+        "new_cases_smoothed_per_million",
+        "new_deaths_smoothed_per_million",
+        "excess_mortality",
+        "excess_mortality_cumulative",
+        "excess_mortality_cumulative_absolute",
+        "excess_mortality_cumulative_per_million",
+        "new_tests_smoothed",
+        "new_tests_smoothed_per_thousand",
+        "total_tests_per_thousand",
+        "new_tests_per_thousand",
+        "total_vaccinations_per_hundred",
+        "people_vaccinated_per_hundred",
+        "people_fully_vaccinated_per_hundred",
+        "total_boosters",
+        "total_boosters_per_hundred",
+        "new_vaccinations",
+        "new_vaccinations_smoothed",
+        "new_vaccinations_smoothed_per_million",
+        "new_people_vaccinated_smoothed",
+        "new_people_vaccinated_smoothed_per_hundred",
+        "code",
+        "continent",
+        "population_density",
+        "median_age",
+        "life_expectancy",
+        "gdp_per_capita",
+        "extreme_poverty",
+        "diabetes_prevalence",
+        "handwashing_facilities",
+        "hospital_beds_per_thousand",
+        "human_development_index"
+      ],
+      "colonne_region_cible": "region"
+    },
+    "regles_transformation": {
+      "semaine_epidemio": {
+        "standard": "ISO 8601",
+        "format_sortie": "YYYY-Www",
+        "exemple": "2020-W12"
+      },
+      "desagregation_regionale": {
+        "methode": "proportionnelle_ponderee",
+        "formule": "cas_region = cas_national × (pop_region / pop_nationale) × facteur_ponderation",
+        "facteurs_ponderation": {
+          "urbain": 1.8,
+          "cotier": 1.2,
+          "plateau": 1.0,
+          "rural": 0.6
+        },
+        "variabilite_aleatoire": 0.15,
+        "description": "Analamanga (urbain) aura ~1.8× plus de cas que sa part démographique"
+      },
+      "calcul_kpi": {
+        "taux_incidence": {
+          "formule": "(nouveaux_cas / population_region) * 100000",
+          "unite": "pour 100 000 habitants"
+        },
+        "taux_letalite": {
+          "formule": "(deces / cas_totaux) * 100",
+          "unite": "pourcentage"
+        },
+        "taux_hospitalisation": {
+          "formule": "(hospitalisations / nouveaux_cas) * 100",
+          "unite": "pourcentage"
+        }
+      },
+      "generation_donnees_manquantes": {
+        "tranche_age": {
+          "methode": "distribution_pyramide_malgache",
+          "categories": ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"],
+          "probabilites": [0.18, 0.20, 0.17, 0.13, 0.10, 0.08, 0.06, 0.05, 0.03]
+        },
+        "meteo": {
+          "methode": "saisonne_regionale",
+          "saison_chaude": {"mois": [11, 12, 1, 2, 3, 4], "temp_base": 28, "humidite_base": 75},
+          "saison_seche": {"mois": [5, 6, 7, 8, 9, 10], "temp_base": 22, "humidite_base": 55}
+        }
+      }
+    }
+  },
+
+  "paludisme": {
+    "metadata": {
+      "maladie_id": "paludisme",
+      "nom": "Paludisme",
+      "agent_pathogene": "Plasmodium falciparum (majoritaire à Madagascar)",
+      "type": "Endémique",
+      "frequence_donnees": "hebdomadaire",
+      "unite_temporelle": "semaine",
+      "saisonnalite": "Novembre à Avril (saison des pluies)",
+      "populations_vulnerables": ["enfants_moins_5_ans", "femmes_enceintes"],
+      "description": "Maladie parasitaire transmise par les moustiques Anophèles, endémique à Madagascar"
+    },
+    "source": {
+      "nom": "PNLP Madagascar / Institut Pasteur de Madagascar",
+      "fichier_brut": "ETL/paludisme/data/processed/paludisme_madagascar_enrichi.csv",
+      "format": "CSV",
+      "encodage": "utf-8",
+      "separateur": ",",
+      "niveau_initial": "régional (déjà désagrégé)",
+      "besoin_desagregation": false
+    },
+    "colonnes_source": {
+      "colonnes_utiles": {
+        "temporelles": ["date", "annee", "mois", "semaine_epidemio"],
+        "geographiques": ["region", "latitude_region", "longitude_region", "type_zone"],
+        "demographiques": ["population_region", "population_moins_5_ans", "population_femmes_enceintes"],
+        "cas": ["cas_suspects", "cas_confirmes", "cas_graves", "cas_enfants_moins_5_ans", "cas_femmes_enceintes"],
+        "deces": ["deces", "deces_enfants_moins_5_ans"],
+        "gueris":["new_recoveries", "total_recoveries"],
+        "specifiques_paludisme": [
+          "type_plasmodium",
+          "tests_rapides_realises",
+          "traitements_CTA_administres"
+        ],
+        "contexte": [
+          "temperature",
+          "humidite",
+          "precipitation",
+          "saison",
+          "acces_soins",
+          "tranche_age"
+        ],
+        "kpis_deja_calcules": [
+          "taux_incidence",
+          "taux_letalite",
+          "taux_positivite",
+          "incidence_enfants_5_ans",
+          "proportion_grave",
+          "niveau_alerte"
+        ]
+      },
+      "colonnes_ignorees": [],
+      "colonne_region_cible": "region"
+    },
+    "regles_transformation": {
+      "semaine_epidemio": {
+        "standard": "ISO 8601",
+        "format_sortie": "YYYY-Www",
+        "exemple": "2024-W12",
+        "description": "Déjà calculée dans le fichier source"
+      },
+      "desagregation_regionale": {
+        "methode": "aucune",
+        "description": "Les données sont déjà au niveau régional"
+      },
+      "calcul_kpi": {
+        "taux_incidence": {
+          "formule": "(cas_confirmes / population_region) * 1000",
+          "unite": "pour 1 000 habitants / semaine",
+          "description": "Déjà calculé dans le fichier source"
+        },
+        "taux_letalite": {
+          "formule": "(deces / cas_confirmes) * 100",
+          "unite": "pourcentage",
+          "description": "Déjà calculé dans le fichier source"
+        },
+        "taux_positivite": {
+          "formule": "(cas_confirmes / tests_rapides_realises) * 100",
+          "unite": "pourcentage",
+          "description": "Déjà calculé dans le fichier source"
+        },
+        "incidence_enfants_5_ans": {
+          "formule": "(cas_enfants_moins_5_ans / population_moins_5_ans) * 1000",
+          "unite": "pour 1 000 enfants < 5 ans",
+          "description": "Déjà calculé dans le fichier source"
+        },
+        "proportion_grave": {
+          "formule": "(cas_graves / cas_confirmes) * 100",
+          "unite": "pourcentage",
+          "description": "Déjà calculé dans le fichier source"
+        }
+      },
+      "generation_donnees_manquantes": {
+        "meteo": {
+          "methode": "deja_presente",
+          "description": "Température, humidité et précipitations déjà générées"
+        },
+        "tranche_age": {
+          "methode": "deja_presente",
+          "description": "Distribution spécifique paludisme déjà appliquée"
+        }
+      },
+      "validation": {
+        "regles_coherence": [
+          "cas_confirmes <= cas_suspects",
+          "deces <= cas_confirmes",
+          "cas_graves <= cas_confirmes",
+          "deces_enfants_moins_5_ans <= deces",
+          "taux_letalite entre 0 et 100",
+          "taux_positivite entre 0 et 100",
+          "population_moins_5_ans = population_region * 0.15",
+          "population_femmes_enceintes = population_region * 0.03"
+        ]
+      }
+    },
+    "seuils_alerte": {
+      "indicateur_principal": "taux_incidence",
+      "unite": "pour 1 000 habitants / semaine",
+      "niveaux": {
+        "Vert": {"min": 0, "max": 10, "couleur": "#10b981", "signification": "Situation maîtrisée"},
+        "Jaune": {"min": 10, "max": 30, "couleur": "#f59e0b", "signification": "Circulation modérée"},
+        "Orange": {"min": 30, "max": 60, "couleur": "#f97316", "signification": "Circulation active"},
+        "Rouge": {"min": 60, "max": null, "couleur": "#ef4444", "signification": "Épidémie active"}
+      },
+      "regles_speciales": {
+        "alerte_enfants": {
+          "condition": "incidence_enfants_5_ans > 50",
+          "action": "Escalader d'un niveau d'alerte",
+          "description": "Protection renforcée des enfants < 5 ans"
+        },
+        "saisonnalite": {
+          "periode_risque": "Novembre à Avril",
+          "facteur_multiplicateur": 3.5,
+          "description": "Surveillance renforcée pendant la saison des pluies"
+        }
+      }
+    }
+  },
+
+  "peste": {
+    "metadata": {
+      "maladie_id": "peste",
+      "nom": "Peste",
+     "agent_pathogene": "Yersinia pestis",
+      "type": "Endémique saisonnière",
+      "frequence_donnees": "hebdomadaire",
+      "unite_temporelle": "semaine",
+      "periode_a_risque": "Septembre à Avril",
+      "description": "Maladie bactérienne zoonotique, endémique dans les Hautes Terres de Madagascar"
+    },
+    "source": {
+      "nom": "Données simulées / INSP Madagascar / Ministère Santé / Institut Pasteur de Madagascar",
+       "fichier_brut": "ETL/peste/data/raw/peste_madagascar_raw.csv",
+      "format": "CSV",
+      "encodage": "utf-8",
+      "separateur": ",",
+      "niveau_initial": "régional",
+      "besoin_desagregation": false
+    },
+    "colonnes_source": {
+      "colonnes_utiles": {
+        "temporelles": ["date", "annee", "mois", "semaine_epidemio"],
+        "geographiques": ["region", "latitude_region", "longitude_region", "niveau_risque"],
+        "demographiques": ["population_region"],
+        "cas": ["cas_buboniques", "cas_pulmonaires", "cas_septiques", "cas_totaux", "cas_graves"],
+        "deces": ["deces"],
+        "specifiques": ["contacts_suivis", "prophylaxie_administree"]
+      },
+      "colonnes_ignorees": [],
+      "colonne_region_cible": "region"
+    },
+    "regles_transformation": {
+      "semaine_epidemio": {
+        "standard": "ISO 8601",
+        "format_sortie": "YYYY-Www",
+        "description": "Déjà calculée dans le fichier source"
+      },
+      "desagregation_regionale": {
+        "methode": "aucune",
+        "description": "Données déjà au niveau régional"
+      },
+      "calcul_kpi": {
+        "taux_incidence": {
+          "formule": "(cas_totaux / population_region) * 100000",
+          "unite": "pour 100 000 habitants"
+        },
+        "taux_letalite": {
+          "formule": "(deces / cas_totaux) * 100",
+          "unite": "pourcentage"
+        },
+        "taux_contamination": {
+          "formule": "(cas_pulmonaires / cas_totaux) * 100",
+          "unite": "pourcentage"
+        }
+      },
+      "validation": {
+        "regles_coherence": [
+          "cas_buboniques + cas_pulmonaires + cas_septiques = cas_totaux",
+          "deces <= cas_totaux",
+          "cas_graves <= cas_totaux",
+          "taux_letalite entre 0 et 100"
+        ]
+      }
+    },
+    "seuils_alerte": {
+      "indicateur_principal": "taux_incidence",
+      "unite": "pour 100 000 habitants / semaine",
+      "niveaux": {
+        "Vert": {"min": 0, "max": 0.5, "couleur": "#10b981", "signification": "Aucun cas"},
+        "Jaune": {"min": 0.5, "max": 2, "couleur": "#f59e0b", "signification": "Cas sporadiques"},
+        "Orange": {"min": 2, "max": 5, "couleur": "#f97316", "signification": "Début d'épidémie"},
+        "Rouge": {"min": 5, "max": null, "couleur": "#ef4444", "signification": "Épidémie active"}
+      },
+      "regles_speciales": {
+        "alerte_tb_mr": {
+          "condition": "cas_pulmonaires > 3",
+          "action": "Alerte Orange minimum",
+          "description": "Forme pulmonaire très contagieuse"
+        },
+        "saisonnalite": {
+          "periode_risque": "Septembre à Avril",
+          "facteur_multiplicateur": 2.5,
+          "description": "Surveillance renforcée en saison fraîche"
+        }
+      }
+    }
+  },
+
+  "rougeole": {
+    "metadata": {
+      "maladie_id": "rougeole",
+      "nom": "Rougeole",
+      "agent_pathogene": "Virus de la rougeole (Paramyxoviridae)",
+      "type": "Endémique avec épidémies",
+      "frequence_donnees": "hebdomadaire",
+      "unite_temporelle": "semaine",
+      "population_cible": "Enfants de 9 mois à 5 ans",
+      "description": "Maladie virale très contagieuse, évitable par la vaccination"
+    },
+    "source": {
+      "nom": "Données simulées / IPM-LNR / Ministère Santé / Institut Pasteur de Madagascar",
+      "fichier_brut": "ETL/rougeole/data/raw/rougeole_madagascar_raw.csv",
+      "format": "CSV",
+      "encodage": "utf-8",
+      "separateur": ",",
+      "niveau_initial": "régional",
+      "besoin_desagregation": false
+    },
+    "colonnes_source": {
+      "colonnes_utiles": {
+        "temporelles": ["date", "annee", "mois", "semaine_epidemio"],
+        "geographiques": ["region", "latitude_region", "longitude_region"],
+        "demographiques": ["population_region", "population_cible_vaccination"],
+        "cas": ["cas_signalés", "cas_suspects", "cas_confirmes_lnr", "deces"],
+        "gueris": ["new_recoveries", "total_recoveries"],
+        "age": ["cas_0_4_ans", "cas_5_9_ans", "cas_10_14_ans", "cas_15_19_ans", "cas_20_plus_ans"],
+        "sexe": ["cas_masculins", "cas_feminins"],
+        "vaccination": ["cas_non_vaccines", "cas_statut_inconnu", "cas_1_dose", "cas_2_doses", "enfants_vaccines_1_dose", "enfants_vaccines_2_doses", "couverture_vaccinale_pct"],
+        "periode": ["periode_epidemique"]
+      },
+      "colonnes_ignorees": [],
+      "colonne_region_cible": "region"
+    },
+    "regles_transformation": {
+      "semaine_epidemio": {
+        "standard": "ISO 8601",
+        "format_sortie": "YYYY-Www",
+        "description": "Déjà calculée dans le fichier source"
+      },
+      "desagregation_regionale": {
+        "methode": "aucune",
+        "description": "Données déjà au niveau régional"
+      },
+      "calcul_kpi": {
+        "taux_incidence": {
+          "formule": "(cas_signalés / population_region) * 100000",
+          "unite": "pour 100 000 habitants"
+        },
+        "taux_letalite": {
+          "formule": "(deces / cas_signalés) * 100",
+          "unite": "pourcentage"
+        },
+        "couverture_vaccinale": {
+          "formule": "couverture_vaccinale_pct",
+          "unite": "pourcentage",
+          "description": "Déjà calculée dans le fichier source"
+        }
+      },
+      "validation": {
+        "regles_coherence": [
+          "cas_suspects + cas_confirmes_lnr = cas_signalés",
+          "deces <= cas_signalés",
+          "cas_0_4_ans + cas_5_9_ans + cas_10_14_ans + cas_15_19_ans + cas_20_plus_ans = cas_signalés",
+          "cas_masculins + cas_feminins = cas_signalés",
+          "couverture_vaccinale_pct entre 0 et 100"
+        ]
+      }
+    },
+    "seuils_alerte": {
+      "indicateur_principal": "taux_incidence",
+      "unite": "pour 100 000 habitants / semaine",
+      "niveaux": {
+        "Vert": {"min": 0, "max": 1, "couleur": "#10b981", "signification": "Aucun cas"},
+        "Jaune": {"min": 1, "max": 5, "couleur": "#f59e0b", "signification": "Cas sporadiques"},
+        "Orange": {"min": 5, "max": 20, "couleur": "#f97316", "signification": "Début d'épidémie"},
+        "Rouge": {"min": 20, "max": null, "couleur": "#ef4444", "signification": "Épidémie active"}
+      },
+      "regles_speciales": {
+        "alerte_vaccination": {
+          "condition": "couverture_vaccinale_pct < 80",
+          "action": "Escalader d'un niveau d'alerte",
+          "description": "Couverture vaccinale insuffisante (seuil OMS: 95%)"
+        },
+        "alerte_enfants": {
+          "condition": "cas_0_4_ans / cas_signalés > 0.60",
+          "action": "Alerte Orange minimum",
+          "description": "Majorité des cas chez les enfants < 5 ans"
+        }
+      }
+    }
+  },
+
+  "hepatite": {
+  "metadata": {
+    "maladie_id": "hepatite",
+    "nom": "Hépatite B",
+    "code": "VHB",
+    "categorie": "Hépatite virale",
+    "agent_pathogene": "Virus de l'hépatite B (VHB)",
+    "type": "Endémique",
+    "frequence_donnees": "hebdomadaire",
+    "unite_temporelle": "semaine",
+    "prevalence_nationale_reference_aghbs": 0.069,
+    "description": "Infection virale du foie causée par le virus de l'hépatite B. La prévalence de l'antigène HBsAg constitue l'indicateur principal de surveillance régionale."
+  },
+
+  "source": {
+    "nom": "OMS / Ministère de la Santé / Institut Pasteur de Madagascar",
+    "fichier_brut": "ETL/hepatite/data/raw/hepatite_madagascar_raw.csv",
+    "format": "CSV",
+    "encodage": "utf-8",
+    "separateur": ",",
+    "niveau_initial": "regional",
+    "besoin_desagregation": false,
+    "type_donnees": "synthetiques_calibrees",
+    "remarque": "Les données régionales 2020-2025 générées pour EpiMad sont simulées et calibrées à partir des références épidémiologiques disponibles."
+  },
+
+  "colonnes_source": {
+    "colonnes_utiles": {
+      "temporelles": [
+        "date",
+        "annee",
+        "mois",
+        "semaine_epidemio"
+      ],
+
+      "geographiques": [
+        "region",
+        "latitude_region",
+        "longitude_region"
+      ],
+
+      "demographiques": [
+        "population_region",
+        "femmes_enceintes",
+        "enfants_moins_5_ans",
+        "naissances_semaine",
+        "porteurs_chroniques_estimes",
+        "prevalence_aghbs_region"
+      ],
+
+      "depistage_femmes_enceintes": [
+        "femmes_enceintes_depistees",
+        "femmes_enceintes_aghbs_positives"
+      ],
+
+      "transmission_mere_enfant": [
+        "enfants_exposes_aghbs",
+        "enfants_vaccines_naissance",
+        "enfants_devenus_porteurs",
+        "taux_transmission_mere_enfant",
+        "couverture_vaccinale_naissance"
+      ],
+
+      "age_chroniques": [
+        "cas_chroniques_enfants",
+        "cas_chroniques_adultes",
+        "cas_chroniques_seniors"
+      ],
+
+      "cas": ["cas_aigus", "nouveaux_diagnostics_aghbs", "cas_chroniques_suivis"],
+      "deces": ["deces"],
+      "gueris": ["new_recoveries", "total_recoveries"],
+
+      "depistage_traitement": [
+        "tests_depistage",
+        "nouveaux_diagnostics_aghbs",
+        "personnes_traitees"
+      ]
+    },
+
+    "colonnes_ignorees": [],
+
+    "colonne_region_cible": "region"
+  },
+
+  "regles_transformation": {
+
+    "semaine_epidemio": {
+      "standard": "ISO 8601",
+      "format_sortie": "YYYY-Www",
+      "description": "Semaine épidémiologique calculée à partir de la date."
+    },
+
+    "desagregation_regionale": {
+      "methode": "aucune",
+      "description": "Les données sont générées ou disponibles directement au niveau régional."
+    },
+
+    "calcul_indicateurs": {
+
+      "prevalence_aghbs": {
+        "formule": "porteurs_chroniques_estimes / population_region",
+        "unite": "proportion"
+      },
+
+      "prevalence_aghbs_pourcentage": {
+        "formule": "(porteurs_chroniques_estimes / population_region) * 100",
+        "unite": "pourcentage"
+      },
+
+      "taux_incidence": {
+        "formule": "(nouveaux_diagnostics_aghbs / population_region) * 100000",
+        "unite": "pour 100 000 habitants",
+        "description": "Nombre de nouveaux diagnostics rapporté à la population régionale."
+      },
+
+      "taux_letalite": {
+        "formule": "(deces / (cas_aigus + nouveaux_diagnostics_aghbs)) * 100",
+        "unite": "pourcentage"
+      },
+
+      "taux_depistage": {
+        "formule": "(tests_depistage / population_region) * 100",
+        "unite": "pourcentage"
+      },
+
+      "taux_positivite_aghbs": {
+        "formule": "(femmes_enceintes_aghbs_positives / femmes_enceintes_depistees) * 100",
+        "unite": "pourcentage"
+      },
+
+      "taux_couverture_vaccinale": {
+        "formule": "(enfants_vaccines_naissance / naissances_semaine) * 100",
+        "unite": "pourcentage"
+      }
+    },
+
+    "validation": {
+      "regles_coherence": [
+        "population_region > 0",
+        "cas_aigus >= 0",
+        "nouveaux_diagnostics_aghbs >= 0",
+        "cas_chroniques_suivis >= 0",
+        "deces >= 0",
+        "deces <= cas_aigus",
+        "prevalence_aghbs_region >= 0",
+        "prevalence_aghbs_region <= 0.30",
+        "femmes_enceintes_depistees <= femmes_enceintes",
+        "femmes_enceintes_aghbs_positives <= femmes_enceintes_depistees",
+        "enfants_vaccines_naissance <= naissances_semaine",
+        "enfants_devenus_porteurs <= enfants_exposes_aghbs",
+        "taux_transmission_mere_enfant >= 0",
+        "taux_transmission_mere_enfant <= 100",
+        "couverture_vaccinale_naissance >= 0",
+        "couverture_vaccinale_naissance <= 100",
+        "personnes_traitees <= nouveaux_diagnostics_aghbs"
+      ]
+    }
+  },
+
+  "seuils_alerte": {
+
+    "indicateur_principal": "prevalence_aghbs_region",
+
+    "unite": "proportion",
+
+    "niveaux": {
+
+      "Vert": {
+        "min": 0.0,
+        "max": 0.05,
+        "couleur": "#10b981",
+        "signification": "Prévalence faible (<5%)"
+      },
+
+      "Jaune": {
+        "min": 0.05,
+        "max": 0.08,
+        "couleur": "#f59e0b",
+        "signification": "Prévalence modérée (5-8%)"
+      },
+
+      "Orange": {
+        "min": 0.08,
+        "max": 0.12,
+        "couleur": "#f97316",
+        "signification": "Prévalence élevée (8-12%)"
+      },
+
+      "Rouge": {
+        "min": 0.12,
+        "max": null,
+        "couleur": "#ef4444",
+        "signification": "Prévalence très élevée (>12%)"
+      }
+    },
+
+    "regles_speciales": {
+
+      "alerte_transmission_mere_enfant": {
+        "condition": "taux_transmission_mere_enfant > 20",
+        "action": "Alerte Orange minimum",
+        "description": "Transmission mère-enfant élevée."
+      },
+
+      "alerte_depistage_femmes_enceintes": {
+        "condition": "(femmes_enceintes_depistees / femmes_enceintes) < 0.50",
+        "action": "Alerte Jaune minimum",
+        "description": "Dépistage prénatal insuffisant."
+      },
+
+      "alerte_couverture_vaccinale": {
+        "condition": "couverture_vaccinale_naissance < 80",
+        "action": "Alerte Jaune minimum",
+        "description": "Couverture vaccinale à la naissance insuffisante."
+      }
+    }
+  }
+},
+  "tuberculose": {
+    "metadata": {
+      "maladie_id": "tuberculose",
+      "nom": "Tuberculose",
+     "agent_pathogene": "Mycobacterium tuberculosis",
+      "type": "Endémique chronique",
+      "frequence_donnees": "hebdomadaire",
+      "unite_temporelle": "semaine",
+      "incidence_nationale": "213 pour 100 000 hab",
+      "prevalence_nationale": "413 pour 100 000 hab",
+      "description": "Maladie infectieuse chronique, co-infection VIH fréquente, TB multirésistante en progression"
+    },
+    "source": {
+      "nom": "Données simulées / OMS / PNLT",
+      "fichier_brut": "ETL/tuberculose/data/raw/tuberculose_madagascar_raw.csv",
+      "format": "CSV",
+      "encodage": "utf-8",
+      "separateur": ",",
+      "niveau_initial": "régional",
+      "besoin_desagregation": false
+    },
+    "colonnes_source": {
+      "colonnes_utiles": {
+        "temporelles": ["date", "annee", "mois", "semaine_epidemio"],
+        "geographiques": ["region", "latitude_region", "longitude_region"],
+        "demographiques": ["population_region", "incidence_regionale_annuelle"],
+        "formes_cliniques": ["cas_pulmonaire_bacillifere", "cas_pulmonaire_non_bacillifere", "cas_extra_pulmonaire", "cas_tb_multiresistante", "nouveaux_cas"],
+        "coinfection_vih": ["cas_coinfection_vih", "deces_coinfection_vih"],
+        "age": ["cas_enfants_moins_15_ans", "cas_adultes_15_54_ans", "cas_seniors_55_plus"],
+        "depistage": ["tests_geneXpert_realises", "tests_microscopie_realises", "tests_lam_realises", "cas_non_diagnostiques"],
+        "traitement": ["patients_sous_traitement", "patients_gueris", "patients_abandon", "patients_echec"],
+        "deces": ["deces"],
+        "gueris":["patients_gueris"],
+        "prison": ["cas_detectes_prison"]
+      },
+      "colonnes_ignorees": [],
+      "colonne_region_cible": "region"
+    },
+    "regles_transformation": {
+      "semaine_epidemio": {
+        "standard": "ISO 8601",
+        "format_sortie": "YYYY-Www",
+        "description": "Déjà calculée dans le fichier source"
+      },
+      "desagregation_regionale": {
+        "methode": "aucune",
+        "description": "Données déjà au niveau régional"
+      },
+      "calcul_kpi": {
+        "taux_incidence_annuel": {
+          "formule": "incidence_regionale_annuelle",
+          "unite": "pour 100 000 habitants / an",
+          "description": "Déjà calculée dans le fichier source"
+        },
+        "taux_letalite": {
+          "formule": "(deces / nouveaux_cas) * 100",
+          "unite": "pourcentage"
+        },
+        "taux_succes_therapeutique": {
+          "formule": "(patients_gueris / patients_sous_traitement) * 100",
+          "unite": "pourcentage"
+        }
+      },
+      "validation": {
+        "regles_coherence": [
+          "cas_pulmonaire_bacillifere + cas_pulmonaire_non_bacillifere + cas_extra_pulmonaire + cas_tb_multiresistante = nouveaux_cas",
+          "deces <= nouveaux_cas",
+          "patients_gueris + patients_abandon + patients_echec <= patients_sous_traitement",
+          "taux_letalite entre 0 et 100",
+          "taux_succes_therapeutique entre 0 et 100"
+        ]
+      }
+    },
+    "seuils_alerte": {
+      "indicateur_principal": "incidence_regionale_annuelle",
+      "unite": "pour 100 000 habitants / an",
+      "niveaux": {
+        "Vert": {"min": 0, "max": 150, "couleur": "#10b981", "signification": "Incidence faible"},
+        "Jaune": {"min": 150, "max": 200, "couleur": "#f59e0b", "signification": "Incidence modérée"},
+        "Orange": {"min": 200, "max": 250, "couleur": "#f97316", "signification": "Incidence élevée"},
+        "Rouge": {"min": 250, "max": null, "couleur": "#ef4444", "signification": "Incidence très élevée"}
+      },
+      "regles_speciales": {
+        "alerte_tb_mr": {
+          "condition": "cas_tb_multiresistante > 5",
+          "action": "Alerte Rouge",
+          "description": "TB multirésistante détectée"
+        },
+        "alerte_coinfection_vih": {
+          "condition": "cas_coinfection_vih / nouveaux_cas > 0.30",
+          "action": "Alerte Orange minimum",
+          "description": "Co-infection VIH élevée (>30%)"
+        },
+        "alerte_succes_therapeutique": {
+          "condition": "taux_succes_therapeutique < 75",
+          "action": "Alerte Jaune",
+          "description": "Succès thérapeutique insuffisant (objectif OMS: 85%)"
+        }
+      }
+    }
+  }
+}
